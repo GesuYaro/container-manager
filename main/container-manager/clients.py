@@ -16,9 +16,10 @@ class Client:
     def container_ids(self) -> list[str]:
         return self.__container_ids
 
-    def add_container(self, container_id: str):
-        self.__container_ids.append(container_id)
-        raise NotImplementedError
+    def add_container(self, image_name: str, command: str) -> str:
+        container = self.__client.containers.run(image_name, command=command, detach=True)
+        self.__container_ids.append(container.id)
+        return container.id
 
     def get_container(self, container_id: str) -> Container:
         return self.__client.containers.get(container_id)
@@ -28,7 +29,7 @@ class Client:
 
 
 class ClientPool:
-    def __init__(self, clients: Optional[list[Client]]):
+    def __init__(self, clients: Optional[list[Client]] = None):
         if clients is None:
             self.__clients = []
         else:
